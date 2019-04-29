@@ -1,20 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { graphql, compose } from 'react-apollo';
 import { connect } from 'react-redux';
+import { Route } from 'react-router-dom';
 
-import LoginPage from '../pages/Auth/Login';
 import UserLogin from '../mutations/UserLogin';
+import LoginPage from '../pages/Auth/Login';
 import { authManager } from '../actions'
 
 const Login = props => {
 
-    const loginHandler = (event, authData) => {
+    console.log('props in ====-> login: ', props)
+    
+    const loginHandler = (event, inputData) => {
         event.preventDefault();
 
         props.authManager({ authLoading: true})
         // props.setAuthLoading(true);
 
-        const { email, password } = authData;
+        const { email, password } = inputData;
         props.mutate({ 
             variables: { email, password }
         })
@@ -51,21 +54,25 @@ const Login = props => {
             // props.setError(error);
         }); 
     };
+    
+    const loading = props.authLoading;
+    const { authLoading, authManager, mutate, ...noA } = props;
+    // const { location, history, match } = props;
 
     return (
-        <React.Fragment>
+        <div>
             <LoginPage
+                { ...noA }
+                loading={ loading }
                 onLogin={ loginHandler }
-                loading={ props.authData.authLoading }
             />
-        </React.Fragment>    
-    ); 
-
-}
+        </div>
+    );
+    
+};
 
 const mapStateToProps = ({ authData }) => {
-    console.log('authData: ', authData)
-    return { authData };
+    return { authLoading: authData.authLoading };
 }
 
 export default compose(

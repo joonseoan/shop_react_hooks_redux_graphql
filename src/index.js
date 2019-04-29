@@ -22,11 +22,7 @@ const Root = () => {
     <ApolloProvider client={ client }>
       <ApolloProviderHooks client={ client }>
         <Provider store={ store } >
-          <BrowserRouter>
-            <div>
               <App />
-            </div>
-          </BrowserRouter>
         </Provider>
       </ApolloProviderHooks>
     </ApolloProvider>

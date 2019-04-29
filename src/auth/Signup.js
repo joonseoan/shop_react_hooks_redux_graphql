@@ -8,7 +8,7 @@ import UserSignup from '../mutations/UserSignup';
 
 const Signup = props => {
     console.log('props in Signup: ', props);
-    
+
     const signupHandler = (event, authData) => {
         event.preventDefault();
         const { email, password, name } = authData.signupForm;
@@ -25,8 +25,6 @@ const Signup = props => {
           if(resData.error || resData.data.error) {
             console.log('error graphql in Signup: ', resData)
           }
-
-          console.log(resData);
           props.authManager({ isAuth: false, authLoading: false });
         })
         .catch(error => {
@@ -39,13 +37,17 @@ const Signup = props => {
         });
     }
 
-    return(
-        <React.Fragment>
-            <SignupPage
-                onSignup={ signupHandler }
-                loading={ props.authLoading }
-            />
-        </React.Fragment>
+    const loading = props.authLoading;
+    const { authLoading, authManager, mutate, ...noA } = props;
+
+    return (
+      <div>
+        <SignupPage
+          { ...noA }
+          onSignup={ signupHandler }
+          loading={ loading }
+        />
+      </div>
     );
 }
 
