@@ -8,29 +8,17 @@ import Login from './Login';
 import Signup from './Signup';
 
 const Tokens = props => {
-    console.log(props)
-
-    const { userId, token } = props.authData
-    const expiry = new Date(
-        // current time + 1 hour
-        new Date().getTime() + (60 * 60 * 1000)
-    );
-
-    localStorage.setItem('userId', userId);
-    localStorage.setItem('token', token);
-    localStorage.setItem('expiry', expiry);
-
-    // must CONSTORL IN LOGOUT
-    // this.setAutoLogout(remainingMilliseconds);
-
+    const { userId, token } = props.authData;
+    const setAutoLogout = props.setAutoLogout;
     return (
          <React.Fragment>
-         {!props.authData.isAuth ? (
+            {!props.authData.isAuth ? (
                 <React.Fragment>
                     <Route path="/"
                         exact
                         render={ props => (<Login 
                             { ...props }
+                            setAutoLogout={ setAutoLogout }
                         />)} 
                     />
                     <Route path="/signup"
@@ -71,7 +59,4 @@ const maptStateToProps = ({ authData }) => {
 };
 
 export default connect(maptStateToProps)(Tokens);
-
-// export default withRouter(connect(maptStateToProps)(Tokens));
-// export default connect(maptStateToProps)(withRouter(Tokens));
 

@@ -26,6 +26,8 @@ const Signup = props => {
             console.log('error graphql in Signup: ', resData)
           }
           props.authManager({ isAuth: false, authLoading: false });
+
+          props.history.push('/');
         })
         .catch(error => {
           console.log(error);

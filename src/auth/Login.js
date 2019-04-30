@@ -1,21 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { graphql, compose } from 'react-apollo';
 import { connect } from 'react-redux';
-import { Route } from 'react-router-dom';
 
 import UserLogin from '../mutations/UserLogin';
 import LoginPage from '../pages/Auth/Login';
 import { authManager } from '../actions'
 
 const Login = props => {
-
-    console.log('props in ====-> login: ', props)
     
     const loginHandler = (event, inputData) => {
         event.preventDefault();
 
         props.authManager({ authLoading: true})
-        // props.setAuthLoading(true);
 
         const { email, password } = inputData;
         props.mutate({ 
@@ -35,10 +31,19 @@ const Login = props => {
                 token,
                 userId
             });
-            
-            // props.setIsAuth(true);
-            // props.setAuthLoading(false);
-            // props.setAuthData(token, userId);
+
+            // should be set at the event component
+            //  otherwise it will reset again when the browser refreshes.
+            localStorage.setItem('userId', resData.data.login.userId);
+            localStorage.setItem('token', resData.data.login.token);
+            const remainingMilliseconds = 60 * 60 * 1000;
+            const expiryDate = new Date(
+                new Date().getTime() + remainingMilliseconds
+            );
+
+            localStorage.setItem('expiryDate', expiryDate.toISOString());
+            props.setAutoLogout(remainingMilliseconds);
+                    
         })
         .catch(error => {
     
@@ -49,21 +54,17 @@ const Login = props => {
                 error: error
             });
             
-            // props.setIsAuth(false);
-            // props.setAuthLoading(false);
-            // props.setError(error);
         }); 
     };
     
-    const loading = props.authLoading;
+    // const loading = props.authLoading;
     const { authLoading, authManager, mutate, ...noA } = props;
-    // const { location, history, match } = props;
 
     return (
         <div>
             <LoginPage
                 { ...noA }
-                loading={ loading }
+                loading={ props.authLoading }
                 onLogin={ loginHandler }
             />
         </div>

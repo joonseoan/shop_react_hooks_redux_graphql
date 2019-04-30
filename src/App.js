@@ -1,5 +1,5 @@
 import React, {useState, useEffect } from 'react';
-import { BrowserRouter, Switch, Redirect, Route } from 'react-router-dom';
+import { BrowserRouter, Switch, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import Layout from './components/Layout/Layout';
@@ -10,9 +10,9 @@ import MainNavigation from './components/Navigation/MainNavigation/MainNavigatio
 import ErrorHandler from './components/ErrorHandler/ErrorHandler';
 // import FeedPage from './pages/Feed/Feed';
 // import SinglePostPage from './pages/Feed/SinglePost/SinglePost';
-import Login from './auth/Login';
-import Signup from './auth/Signup'
 import Tokens from './auth/Tokens'
+import Logout from './auth/Logout';
+import cleanLocalStorage from './util/cleanLocalStorage';
 // import LoginPage from './pages/Auth/Login';
 // import SignupPage from './pages/Auth/Signup';
 
@@ -20,22 +20,21 @@ import { authManager } from './actions';
 
 import './App.css';
 
+const App = props => {
 
-const App = props =>  {
-
-  const [ userId, setUserId ] = useState('');
-  const [ token, setToken ] = useState('');
-  const [ expiry, setExpiry ] = useState(null);
   const [ showBackdrop, setshowBackdrop ] = useState(false);
   const [ showMobileNav, setShowMobileNav ] = useState(false);
   const [ error, setError ] = useState(null);
 
   useEffect(() => {
+    console.log(localStorage.getItem('userId'))
+    console.log(localStorage.getItem('token'))
+    console.log(localStorage.getItem('expiryDate'))
     
     // token
     const token = localStorage.getItem('token');
     // expiry data defined in the server
-    const expiryDate = localStorage.getItem('expiry');
+    const expiryDate = localStorage.getItem('expiryDate');
 
     if (!token || !expiryDate) {
       return;
@@ -44,12 +43,15 @@ const App = props =>  {
     if (new Date(expiryDate) <= new Date()) {
 
       // automatically logout
-      this.logoutHandler();
+      props.authManager({ isAuth: false, token: '' });
+      cleanLocalStorage();
       return;
     }
     
     const userId = localStorage.getItem('userId');
     const remainingMilliseconds = new Date(expiryDate).getTime() - new Date().getTime();
+    
+    
     
     // set login status with userId and token
     // this.setState({ isAuth: true, token: token, userId: userId });
@@ -64,6 +66,13 @@ const App = props =>  {
 
   }, []);
 
+  const setAutoLogout = milliseconds => {
+    setTimeout(() => {
+      props.authManager({ isAuth: false, token: '' });
+      cleanLocalStorage();
+    }, milliseconds);
+  };
+
   // close backdrop for small screen
   const backdropClickHandler = () => {
     setshowBackdrop(false);
@@ -71,66 +80,34 @@ const App = props =>  {
     setError(null);
   };
 
-  // logout by deleting all localStoage fields
-  const logoutHandler = () => {
-    props.authManager({ isAuth: false, token: '' });
-    // this.setState({ isAuth: false, token: null });
-    localStorage.removeItem('token');
-    localStorage.removeItem('expiry');
-    localStorage.removeItem('userId');
-  };
-
-  const setAutoLogout = milliseconds => {
-    setTimeout(() => {
-      logoutHandler();
-    }, milliseconds);
-  };
-
   const errorHandler = () => {
     setError(null);
     // this.setState({ error: null });
   };
 
-  return(
-    <BrowserRouter>
-      <div>
-        {showBackdrop && (
-          <Backdrop onClick={ backdropClickHandler } />
-        )}
-        <ErrorHandler error={ error } onHandle={ errorHandler } />
-        <Layout
-          header={
-            <Toolbar>
-              <MainNavigation
-                // onOpenMobileNav={this.mobileNavHandler.bind(this, true)}
-                onLogout={ logoutHandler }
-                isAuth={ props.isAuth }
-              />
-            </Toolbar>
-          }
-        />
-        <Switch>
-          <Tokens />
-          <Redirect to="/" />
-        </Switch>
-      </div>
-    </BrowserRouter>
-  );
+    return(
+      <BrowserRouter>
+        <div>
+          {showBackdrop && (
+            <Backdrop onClick={ backdropClickHandler } />
+          )}
+          <ErrorHandler error={ error } onHandle={ errorHandler } />
+          <Logout />
+          <Switch>
+            <Tokens setAutoLogout={ (seconds) => { setAutoLogout(seconds) } } />
+            <Redirect to="/" />
+          </Switch>
+        </div>
+      </BrowserRouter>
+    );
+  
 }
 
 const mapStateToProps = ({ authData }) => {
   return { isAuth: authData.isAuth };
 }
 
-// export default withRouter(connect(mapStateToProps)(App));
-// export default connect(mapStateToProps)(withRouter(App));
-
 export default connect(mapStateToProps, { authManager })(App);
-
-/* 
-
-
-*/
 
 
 // might need to implement this on the project

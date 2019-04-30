@@ -1,5 +1,9 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { connect } from 'react-redux';
+
+import { authManager } from '../../../actions';
+import cleanLocalStorage from '../../../util/cleanLocalStorage';
 
 import './NavigationItems.css';
 
@@ -11,20 +15,28 @@ const navItems = [
 
 const navigationItems = props => [
   ...navItems.filter(item => item.auth === props.isAuth).map(item => (
+    
     <li
       key={item.id}
       className={['navigation-item', props.mobile ? 'mobile' : ''].join(' ')}
     >
-      <NavLink to={item.link} exact onClick={props.onChoose}>
+      <NavLink to={item.link} exact onClick={ props.onChoose }>
         {item.text}
       </NavLink>
     </li>
   )),
   props.isAuth && (
     <li className="navigation-item" key="logout">
-      <button onClick={props.onLogout}>Logout</button>
+      <button onClick={ () => {
+        props.authManager({ isAuth: false, token: '' })
+        cleanLocalStorage();
+      }}>Logout</button>
     </li>
   )
 ];
 
-export default navigationItems;
+const mapStateTopProps = ({ authData }) => {
+  return { isAuth: authData.isAuth };
+}
+
+export default connect(mapStateTopProps, { authManager })(navigationItems);
