@@ -8,8 +8,9 @@ import Login from './Login';
 import Signup from './Signup';
 
 const Tokens = props => {
-    const { userId, token } = props.authData;
-    const setAutoLogout = props.setAutoLogout;
+    
+    const { authData: { userId, token}, setAutoLogout } = props;
+
     return (
          <React.Fragment>
             {!props.authData.isAuth ? (

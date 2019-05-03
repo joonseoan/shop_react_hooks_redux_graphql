@@ -22,19 +22,24 @@ const Signup = props => {
         })
         .then(resData => {
 
-          if(resData.error || resData.data.error) {
-            console.log('error graphql in Signup: ', resData)
+          console.log('RRRRRRRRRRRRRRRRRRRRRRRRR')
+
+          if(resData.errors[0] && !resData.errors[0].status == 422) {
+            //errors
+            console.log(resData.errors[0].data[0].message);
+            // console.log('error graphql in Signup: ', resData)
           }
           props.authManager({ isAuth: false, authLoading: false });
 
           props.history.push('/');
         })
-        .catch(error => {
-          console.log(error);
+        .catch(res => {
+          
+          console.log(res.graphQLErrors[0]);
           props.authManager({
               isAuth: false,
               authLoading: false,
-              error: error
+              error: ''
           });
         });
     }

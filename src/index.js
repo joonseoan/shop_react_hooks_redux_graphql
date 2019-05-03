@@ -12,7 +12,10 @@ import App from './App';
 import reducers from './reducers';
 
 const client = new AplloClient({
-  uri: 'http://localhost:8080/graphql'
+  uri: 'http://localhost:8080/graphql',
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem('token')}`,
+  }
 });
 
 const store = createStore(reducers);

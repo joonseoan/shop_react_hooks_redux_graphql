@@ -1,13 +1,17 @@
 import React, { Component, Fragment } from 'react';
-// import openSocket from 'socket.io-client';
+import { graphql } from 'react-apollo';
+
+import statusQuery from '../../query/statusQuery';
 
 import Post from '../../components/Feed/Post/Post';
 import Button from '../../components/Button/Button';
 import FeedEdit from '../../components/Feed/FeedEdit/FeedEdit';
-import Input from '../../components/Form/Input/Input';
 import Paginator from '../../components/Paginator/Paginator';
 import Loader from '../../components/Loader/Loader';
 import ErrorHandler from '../../components/ErrorHandler/ErrorHandler';
+import Status from './Status';
+
+
 import './Feed.css';
 
 class Feed extends Component {
@@ -16,13 +20,15 @@ class Feed extends Component {
     posts: [],
     totalPosts: 0,
     editPost: null,
-    status: '',
+    // status: '',
     postPage: 1,
     postsLoading: true,
     editLoading: false
   };
 
   componentDidMount() {
+
+   //  console.log('this.data: ', this.props.data);
 
     const graphQLQuery = {
       query: `
@@ -38,30 +44,30 @@ class Feed extends Component {
     // It is the same page as modal including post form.
     
     // [ GraphQL ]
-    fetch('http://localhost:8080/graphql', {
-    // [REST]
-    // etch('http://localhost:8080/auth/getStatus', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + this.props.token
-      },
-      body: JSON.stringify(graphQLQuery)
-    })
-    .then(res => {
-      // if (res.status !== 200) {
-      //   throw new Error('Failed to fetch user status.');
-      // }
-      return res.json();
-    })
-    .then(resData => {
-      if(resData.errors) {
-        throw new Error('Unable to get status.');
-      }
-      console.log(resData)
-      this.setState({ status: resData.data.user.status });
-    })
-    .catch(this.catchError);
+    // fetch('http://localhost:8080/graphql', {
+    // // [REST]
+    // // etch('http://localhost:8080/auth/getStatus', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     Authorization: 'Bearer ' + this.props.token
+    //   },
+    //   body: JSON.stringify(graphQLQuery)
+    // })
+    // .then(res => {
+    //   // if (res.status !== 200) {
+    //   //   throw new Error('Failed to fetch user status.');
+    //   // }
+    //   return res.json();
+    // })
+    // .then(resData => {
+    //   if(resData.errors) {
+    //     throw new Error('Unable to get status.');
+    //   }
+    //   console.log(resData)
+    //   this.setState({ status: resData.data.user.status });
+    // })
+    // .catch(this.catchError);
 
     this.loadPosts();
 
@@ -120,6 +126,13 @@ class Feed extends Component {
   //     };
   //   });
   // }
+
+  componentDidUpdate = (prevProps) => {
+    if(prevProps.data.loading && !this.props.data.loading) {
+      console.log(this.props.data.user.status);
+      this.setState({ status: this.props.data.user.status });
+    }
+  }
 
   loadPosts = direction => {
     // Pagination
@@ -226,42 +239,42 @@ class Feed extends Component {
     .catch(this.catchError);
   };
 
-  statusUpdateHandler = event => {
-    event.preventDefault();
-    const graphQLQuery = {
-      query: `
-        mutation UpdateStatus($status: String!) {
-          updateStatus(status: $status) {
-            status
-          }
-        }
-      `,
-       variables: { status: this.state.status }
-    }
+  // statusUpdateHandler = event => {
+  //   event.preventDefault();
+  //   const graphQLQuery = {
+  //     query: `
+  //       mutation UpdateStatus($status: String!) {
+  //         updateStatus(status: $status) {
+  //           status
+  //         }
+  //       }
+  //     `,
+  //      variables: { status: this.state.status }
+  //   }
 
-    fetch('http://localhost:8080/graphql', {
+  //   fetch('http://localhost:8080/graphql', {
 
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + this.props.token
-      },
-      body: JSON.stringify(graphQLQuery)
-    })
-    .then(res => {
-      // if (res.status !== 200 && res.status !== 201) {
-      //   throw new Error("Can't update status!");
-      // }
-      return res.json();
-    })
-    .then(resData => {
-      console.log(resData);
-      if(resData.errors) {
-        throw new Error('Unable to updated status');
-      }
-    })
-    .catch(this.catchError);
-  };
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Authorization: 'Bearer ' + this.props.token
+  //     },
+  //     body: JSON.stringify(graphQLQuery)
+  //   })
+  //   .then(res => {
+  //     // if (res.status !== 200 && res.status !== 201) {
+  //     //   throw new Error("Can't update status!");
+  //     // }
+  //     return res.json();
+  //   })
+  //   .then(resData => {
+  //     console.log(resData);
+  //     if(resData.errors) {
+  //       throw new Error('Unable to updated status');
+  //     }
+  //   })
+  //   .catch(this.catchError);
+  // };
 
   newPostHandler = () => {
     this.setState({ isEditing: true });
@@ -687,7 +700,8 @@ class Feed extends Component {
 
   render() {
 
-    console.log('this.state.posts: ', this.state.posts);
+    if(this.props.data.loading) return <div>Loading...</div>;
+
     return (
       <Fragment>
         <ErrorHandler error={this.state.error} onHandle={this.errorHandler} />
@@ -699,18 +713,7 @@ class Feed extends Component {
           onFinishEdit={this.finishEditHandler}
         />
         <section className="feed__status">
-          <form onSubmit={this.statusUpdateHandler}>
-            <Input
-              type="text"
-              placeholder="Your status"
-              control="input"
-              onChange={this.statusInputChangeHandler}
-              value={this.state.status}
-            />
-            <Button mode="flat" type="submit">
-              Update
-            </Button>
-          </form>
+          <Status status= { this.props.data.user.status } />
         </section>
         <section className="feed__control">
           <Button mode="raised" design="accent" onClick={this.newPostHandler}>
@@ -754,4 +757,4 @@ class Feed extends Component {
   }
 }
 
-export default Feed;
+export default graphql(statusQuery)(Feed);
