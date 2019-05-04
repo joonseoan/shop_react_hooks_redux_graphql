@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { graphql } from 'react-apollo';
 
+import UpdateStatus from '../../mutations/UpdateStatus';
 import Input from '../../components/Form/Input/Input';
 import Button from '../../components/Button/Button';
-
 
 const Status = props => {
 
@@ -15,56 +15,36 @@ const Status = props => {
 
     const statusUpdateHandler = event => {
         event.preventDefault();
-        const graphQLQuery = {
-          query: `
-            mutation UpdateStatus($status: String!) {
-              updateStatus(status: $status) {
-                status
-              }
-            }
-          `,
-           variables: { status: this.state.status }
-        }
-    
-        fetch('http://localhost:8080/graphql', {
-    
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + this.props.token
-          },
-          body: JSON.stringify(graphQLQuery)
+        props.mutate({
+            variables: { status }
         })
         .then(res => {
-          // if (res.status !== 200 && res.status !== 201) {
-          //   throw new Error("Can't update status!");
-          // }
-          return res.json();
+             // must redefine to build centeric error handler
+            if (res.status !== 200 && res.status !== 201) {
+                throw new Error("Can't update status!");
+            }
         })
-        .then(resData => {
-          console.log(resData);
-          if(resData.errors) {
-            throw new Error('Unable to updated status');
-          }
+        .catch(e => {
+            // must redefine to build centeric error handler
+            console.log(e);
         })
-        .catch(this.catchError);
     };
 
-
-    return(<section>
-        <form onSubmit={ statusUpdateHandler }>
-            <Input
-              type="text"
-              placeholder="Your status"
-              control="input"
-              // onChange={this.statusInputChangeHandler}
-              value={ status }
-            />
-            <Button mode="flat" type="submit">
-              Update
-            </Button>
-          </form>
-    </section>);
+    return(<React.Fragment>
+            <form onSubmit={ statusUpdateHandler }>
+                <Input
+                    type="text"
+                    placeholder="Your status"
+                    control="input"
+                    onChange={ (input, value) => { setStatus(value) } }
+                    value={ status }
+                />
+                <Button mode="flat" type="submit">
+                    Update
+                </Button>
+            </form>
+        </React.Fragment>
+    );
 }
 
-export default Status;
+export default graphql(UpdateStatus)(Status);

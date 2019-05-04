@@ -3,14 +3,14 @@ import { graphql } from 'react-apollo';
 
 import statusQuery from '../../query/statusQuery';
 
-import Post from '../../components/Feed/Post/Post';
+
 import Button from '../../components/Button/Button';
 import FeedEdit from '../../components/Feed/FeedEdit/FeedEdit';
-import Paginator from '../../components/Paginator/Paginator';
-import Loader from '../../components/Loader/Loader';
 import ErrorHandler from '../../components/ErrorHandler/ErrorHandler';
-import Status from './Status';
 
+
+import Status from './Status';
+import Posts from './Posts';
 
 import './Feed.css';
 
@@ -28,110 +28,8 @@ class Feed extends Component {
 
   componentDidMount() {
 
-   //  console.log('this.data: ', this.props.data);
-
-    const graphQLQuery = {
-      query: `
-        {
-          user {
-            status
-          }
-        }
-      
-      `
-    };
-    // WORKING ONCE.
-    // It is the same page as modal including post form.
-    
-    // [ GraphQL ]
-    // fetch('http://localhost:8080/graphql', {
-    // // [REST]
-    // // etch('http://localhost:8080/auth/getStatus', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     Authorization: 'Bearer ' + this.props.token
-    //   },
-    //   body: JSON.stringify(graphQLQuery)
-    // })
-    // .then(res => {
-    //   // if (res.status !== 200) {
-    //   //   throw new Error('Failed to fetch user status.');
-    //   // }
-    //   return res.json();
-    // })
-    // .then(resData => {
-    //   if(resData.errors) {
-    //     throw new Error('Unable to get status.');
-    //   }
-    //   console.log(resData)
-    //   this.setState({ status: resData.data.user.status });
-    // })
-    // .catch(this.catchError);
-
     this.loadPosts();
 
-    // [ Socket IO] 
-    // connection via socket io.
-    // console.log(openSocket('http://localhost:8080'))
-    // const socket = openSocket('http://localhost:8080');
-    // console.log(socket)
-
-    // It is asynch function like setInterval(funtion => {}, time); ************************************
-    // Therefor, it is always ready to listen!!!
-    // socket.on('posts', data => {
-    //   console.log('data.action: ', data.action);
-    //   if(data.action === 'create') {
-    //     this.addPostBySocket(data.post);
-    //   } else if(data.action === 'update') {
-    //     this.updatePostBySocket(data.post);
-    //   } else if(data.action === 'delete') {
-    //     this.loadPosts();
-    //   }
-    // });
-  }
-
-  // [ socketio ]
-  // for socket io based application. Its count-partner in server is a socketio.js
-  // addPostBySocket = post => {
-  //   console.log('post in addPost: ', post)
-  //   this.setState(prevState => {
-  //     const updatedPosts = [ ...prevState.posts ];
-  //     if(prevState.postPage === 1) {
-  //       // delete the last element
-  //       updatedPosts.pop();
-  //       // add post to the first element
-  //       updatedPosts.unshift(post)
-  //     }
-  //     return {
-  //       posts: updatedPosts,
-  //       totalPosts: prevState.totalPosts + 1
-  //     };
-
-  //   });
-  // };
-
-  // updatePostBySocket = post => {
-  //   this.setState(prevState => {
-  //     let updatedPosts = [ ...prevState.posts ];
-  //     const updatedPostIndex = updatedPosts.findIndex(ePost => ePost._id === post._id );
-  //     if(updatedPostIndex > -1) {
-  //       // because it is "PUT", NOT "PATCH"
-  //       updatedPosts[updatedPostIndex] = post;
-  //     } else {
-  //       throw new Error ('Unable to find the post.');
-  //     }
-  //     return {
-  //       posts: updatedPosts
-  //     };
-  //   });
-  // }
-
-  componentDidUpdate = (prevProps) => {
-    if(prevProps.data.loading && !this.props.data.loading) {
-      console.log(this.props.data.user.status);
-      this.setState({ status: this.props.data.user.status });
-    }
   }
 
   loadPosts = direction => {
@@ -239,57 +137,11 @@ class Feed extends Component {
     .catch(this.catchError);
   };
 
-  // statusUpdateHandler = event => {
-  //   event.preventDefault();
-  //   const graphQLQuery = {
-  //     query: `
-  //       mutation UpdateStatus($status: String!) {
-  //         updateStatus(status: $status) {
-  //           status
-  //         }
-  //       }
-  //     `,
-  //      variables: { status: this.state.status }
-  //   }
-
-  //   fetch('http://localhost:8080/graphql', {
-
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Authorization: 'Bearer ' + this.props.token
-  //     },
-  //     body: JSON.stringify(graphQLQuery)
-  //   })
-  //   .then(res => {
-  //     // if (res.status !== 200 && res.status !== 201) {
-  //     //   throw new Error("Can't update status!");
-  //     // }
-  //     return res.json();
-  //   })
-  //   .then(resData => {
-  //     console.log(resData);
-  //     if(resData.errors) {
-  //       throw new Error('Unable to updated status');
-  //     }
-  //   })
-  //   .catch(this.catchError);
-  // };
-
   newPostHandler = () => {
     this.setState({ isEditing: true });
   };
 
-  startEditPostHandler = postId => {
-    this.setState(prevState => {
-      const loadedPost = { ...prevState.posts.find(p => p._id === postId) };
 
-      return {
-        isEditing: true,
-        editPost: loadedPost
-      };
-    });
-  };
 
   cancelEditHandler = () => {
     this.setState({ isEditing: false, editPost: null });
@@ -299,46 +151,11 @@ class Feed extends Component {
     this.setState({
       editLoading: true
     });
-
-    // ------------------------------ image input setup ------------------------------------------------------
-    // Set up data (with image!)
-    // when we use multer, or when we upload a large amount of data
-    //  we should use "formData"
-    //  which is built-in javascript object.
-
-    // json is a just text-based data. 
-    // Therefore, it would be complicated to support large-data file.
     
     const body = new FormData();
-    // [ GraphQL / REST]
-
-    // two tracks : 
-    //  1) 'image' : input from user
-    //    when posting for the first time, it assumes 
-    //    that 'image' must be entered. **** we do not care about edit here
+    
     body.append('image', postData.image);
-    /* 
-      1) when user attaches a new file: mages/fb9b25c0-f019-453d-871d-4f4dee829e7e
-
-      lastModified: 1553787226610
-      lastModifiedDate: Thu Mar 28 2019 11:33:46 GMT-0400 (Eastern Daylight Time) {}
-      name: "kelly.PNG"
-      size: 193800
-      type: "image/png"
-      webkitRelativePath: ""
-      __proto__: File
-
-    // It sends a image path anyway even though the user did not enter a file name.
-    // But req.file is not available because it doe not have property "image/png"
-    2) when the user does not enter a new file during editing.
-      // **************** just remember the previous file 
-      //  because it is in the formData instance.    
-     
-      // in this case req.body
-      images/fb9b25c0-f019-453d-871d-4f4dee829e7e
-
-    */
-    console.log('body.image: ', postData.image);
+    
 
     //  2) 'oldPath' : when editing the post, the user must send
     //    regardless of wheather or not 'images' is available.
@@ -638,10 +455,6 @@ class Feed extends Component {
     });
   };
 
-  statusInputChangeHandler = (input, value) => {
-    this.setState({ status: value });
-  };
-
   deletePostHandler = postId => {
     this.setState({ postsLoading: true });
     
@@ -701,6 +514,7 @@ class Feed extends Component {
   render() {
 
     if(this.props.data.loading) return <div>Loading...</div>;
+    console.log('this.props.data.user.status: ', this.props.data.user.status)
 
     return (
       <Fragment>
@@ -716,41 +530,12 @@ class Feed extends Component {
           <Status status= { this.props.data.user.status } />
         </section>
         <section className="feed__control">
-          <Button mode="raised" design="accent" onClick={this.newPostHandler}>
+          <Button mode="raised" design="accent" onClick={ this.newPostHandler }>
             New Post
           </Button>
         </section>
-        <section className="feed">
-          {this.state.postsLoading && (
-            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-              <Loader />
-            </div>
-          )}
-          {this.state.posts.length <= 0 && !this.state.postsLoading ? (
-            <p style={{ textAlign: 'center' }}>No posts found.</p>
-          ) : null}
-          {!this.state.postsLoading && (
-            <Paginator
-              onPrevious={this.loadPosts.bind(this, 'previous')}
-              onNext={this.loadPosts.bind(this, 'next')}
-              lastPage={Math.ceil(this.state.totalPosts / 2)}
-              currentPage={this.state.postPage}
-            >
-              {this.state.posts.map(post => (
-                <Post
-                  key={post._id}
-                  id={post._id}
-                  author={post.creator.name}
-                  date={new Date(post.createdAt).toLocaleDateString('en-US')}
-                  title={post.title}
-                  image={post.imageUrl}
-                  content={post.content}
-                  onStartEdit={this.startEditPostHandler.bind(this, post._id)}
-                  onDelete={this.deletePostHandler.bind(this, post._id)}
-                />
-              ))}
-            </Paginator>
-          )}
+        <section>
+          <Posts posts = { this.state.posts } loadPosts={ this.loadPosts } deletePostHandler={ this.deletePostHandler }/>
         </section>
       </Fragment>
     );
