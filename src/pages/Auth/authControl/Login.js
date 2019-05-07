@@ -2,9 +2,9 @@ import React from 'react';
 import { graphql, compose } from 'react-apollo';
 import { connect } from 'react-redux';
 
-import UserLogin from '../mutations/UserLogin';
-import LoginPage from '../pages/Auth/Login';
-import { authManager } from '../actions'
+import UserLogin from '../../../mutations/UserLogin';
+import LoginPage from '../Login';
+import { authManager } from '../../../actions'
 
 const Login = props => {
     

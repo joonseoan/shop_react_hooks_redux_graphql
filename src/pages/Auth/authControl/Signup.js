@@ -2,9 +2,9 @@ import React from 'react';
 import { graphql, compose } from 'react-apollo';
 import { connect } from 'react-redux';
 
-import { authManager } from '../actions';
-import SignupPage from '../pages/Auth/Signup';
-import UserSignup from '../mutations/UserSignup';
+import { authManager } from '../../../actions';
+import SignupPage from '../Signup';
+import UserSignup from '../../../mutations/UserSignup';
 
 const Signup = props => {
     console.log('props in Signup: ', props);

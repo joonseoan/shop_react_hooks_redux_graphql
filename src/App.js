@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 
 import Backdrop from './components/Backdrop/Backdrop';
 import ErrorHandler from './components/ErrorHandler/ErrorHandler';
-import Tokens from './auth/Tokens'
-import Logout from './auth/Logout';
+import Tokens from './pages/Auth/authControl/Tokens'
+import Logout from './pages/Auth/authControl/Logout';
 import cleanLocalStorage from './util/cleanLocalStorage';
 import { authManager } from './actions';
 

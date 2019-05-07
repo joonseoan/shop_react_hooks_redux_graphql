@@ -2,8 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Route } from 'react-router-dom';
 
-import FeedPage from '../pages/Feed/Feed';
-import SinglePostPage from '../pages/Feed/SinglePost/SinglePost';
+import FeedPage from '../../Feed/Feed';
+import SinglePostPage from '../../Feed/SinglePost/SinglePost';
 import Login from './Login';
 import Signup from './Signup';
 
