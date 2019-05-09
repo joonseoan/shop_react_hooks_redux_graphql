@@ -325,21 +325,8 @@ class Feed extends Component {
         />
         
         <section className="feed__status">
-          <Status status={ this.state.status }/>
-          { /* 
-              <form onSubmit={this.statusUpdateHandler}>
-                <Input
-                  type="text"
-                  placeholder="Your status"
-                  control="input"
-                  onChange={this.statusInputChangeHandler}
-                  value={this.state.status}
-                />
-                <Button mode="flat" type="submit">
-                  Update
-                </Button>
-              </form>
-          */ }
+          <Status />
+  
         </section>
         <section className="feed__control">
           <Button mode="raised" design="accent" onClick={this.newPostHandler}>

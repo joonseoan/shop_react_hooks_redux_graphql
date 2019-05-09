@@ -8,15 +8,15 @@ import Button from '../../components/Button/Button';
 
 const Status = props => {
 
-    if(!props.data.user) return <div/>;
-
-    console.log(props)
+    if(props.data.loading) return <div/>;
 
     const [ status, setStatus ] = useState('');
 
     useEffect(() => {
+
         setStatus(props.data.user.status);
-    }, [props.data.user.status]);
+
+    }, [ props.data.user.status ]);
 
     const statusUpdateHandler = e => {
 
@@ -26,10 +26,18 @@ const Status = props => {
             variables: { status }
         })
         .then(res => {
-             // must redefine to build centeric error handler
-            if (res.status !== 200 && res.status !== 201) {
-                throw new Error("Can't update status!");
+
+            console.log(res)
+            if(res.data.updateStatus.status) {
+                // Gotta take the status code from the server.
+                // Check out again.
+                throw new Error('Unable to update status');
             }
+            // Use Status code like the one below.
+            // must redefine to build centeric error handler
+            // if (res.status !== 200 && res.status !== 201) {
+            //     throw new Error("Can't update status!");
+            // }
         })
         .catch(e => {
             // must redefine to build centeric error handler
