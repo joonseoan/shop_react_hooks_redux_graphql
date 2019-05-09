@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import CreatePost from '../../mutations/CreatePost';
-import UpdatePost from '../../mutations/UpdatePost';
+// import React, { useState, useEffect } from 'react';
+// import CreatePost from '../../mutations/CreatePost';
+// import UpdatePost from '../../mutations/UpdatePost';
 
-const CreateUpdateMutations = ({ editPost }) => {
+// const CreateUpdateMutations = ({ editPost }) => {
 
-    const [ edit, setEdit ] = useState(null);
+//     const [ edit, setEdit ] = useState(null);
 
-    useEffect(() => {
+//     useEffect(() => {
 
-        setEdit(editPost);
+//         setEdit(editPost);
 
-    }, [ editPost ]);
+//     }, [ editPost ]);
 
-    if(!edit) {
-        return CreatePost;
-    } else {
-        return UpdatePost;
-    }
-}
+//     if(!edit) {
+//         return CreatePost;
+//     } else {
+//         return UpdatePost;
+//     }
+// }
 
-export default CreateUpdateMutations;
+// export default CreateUpdateMutations;

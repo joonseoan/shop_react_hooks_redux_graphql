@@ -2,19 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { graphql } from 'react-apollo';
 
 import UpdateStatus from '../../mutations/UpdateStatus';
+import statusQuery from '../../query/statusQuery';
 import Input from '../../components/Form/Input/Input';
 import Button from '../../components/Button/Button';
 
 const Status = props => {
 
+    if(!props.data.user) return <div/>;
+
+    console.log(props)
+
     const [ status, setStatus ] = useState('');
 
     useEffect(() => {
-        setStatus(props.status)
-    }, []);
+        setStatus(props.data.user.status);
+    }, [props.data.user.status]);
 
-    const statusUpdateHandler = event => {
-        event.preventDefault();
+    const statusUpdateHandler = e => {
+
+        e.preventDefault();
+
         props.mutate({
             variables: { status }
         })
@@ -27,10 +34,12 @@ const Status = props => {
         .catch(e => {
             // must redefine to build centeric error handler
             console.log(e);
-        })
+        });
     };
 
-    return(<React.Fragment>
+    return(
+
+        <React.Fragment>
             <form onSubmit={ statusUpdateHandler }>
                 <Input
                     type="text"
@@ -47,4 +56,6 @@ const Status = props => {
     );
 }
 
-export default graphql(UpdateStatus)(Status);
+export default graphql(statusQuery)(
+    graphql(UpdateStatus)(Status)
+); 
