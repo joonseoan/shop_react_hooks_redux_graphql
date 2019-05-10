@@ -28,45 +28,6 @@ class Feed extends Component {
 
   componentDidMount() {
 
-    // const graphQLQuery = {
-    //   query: `
-    //     {
-    //       user {
-    //         status
-    //       }
-    //     }
-      
-    //   `
-    // };
-    // // WORKING ONCE.
-    // // It is the same page as modal including post form.
-    
-    // // [ GraphQL ]
-    // fetch('http://localhost:8080/graphql', {
-    // // [REST]
-    // // fetch('http://localhost:8080/auth/getStatus', {
-    //    method: 'POST',
-    //    headers: {
-    //     'Content-Type': 'application/json',
-    //     Authorization: 'Bearer ' + this.props.token
-    //   },
-    //   body: JSON.stringify(graphQLQuery)
-    // })
-    // .then(res => {
-    //   // if (res.status !== 200) {
-    //   //   throw new Error('Failed to fetch user status.');
-    //   // }
-    //   return res.json();
-    // })
-    // .then(resData => {
-    //   if(resData.errors) {
-    //     throw new Error('Unable to get status.');
-    //   }
-    //   // console.log(resData)
-    //   this.setState({ status: resData.data.user.status });
-    // })
-    // .catch(this.catchError);
-
     this.loadPosts();
 
   }
@@ -326,8 +287,8 @@ class Feed extends Component {
         
         <section className="feed__status">
           <Status />
-  
         </section>
+
         <section className="feed__control">
           <Button mode="raised" design="accent" onClick={this.newPostHandler}>
             New Post
