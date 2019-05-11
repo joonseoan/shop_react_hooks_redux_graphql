@@ -9,6 +9,7 @@ import Paginator from '../../components/Paginator/Paginator';
 import Loader from '../../components/Loader/Loader';
 import ErrorHandler from '../../components/ErrorHandler/ErrorHandler';
 import CreateUpdateFeed from './CreateUpdateFeed';
+import NewPost from './NewPost';
 import Status from './Status';
 import './Feed.css';
 
@@ -290,9 +291,12 @@ class Feed extends Component {
         </section>
 
         <section className="feed__control">
+          <NewPost newPostHandler={ this.newPostHandler }/>
+        {/* 
           <Button mode="raised" design="accent" onClick={this.newPostHandler}>
             New Post
           </Button>
+        */}
         </section>
         <section className="feed">
           {this.state.postsLoading && (
