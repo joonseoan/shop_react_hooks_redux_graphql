@@ -11,6 +11,7 @@ import './index.css';
 import App from './App';
 import reducers from './reducers';
 
+// console.log('index localStorage: ', localStorage.getItem('token'))
 const client = new AplloClient({
   uri: 'http://localhost:8080/graphql',
   headers: {
@@ -23,11 +24,13 @@ const store = createStore(reducers);
 const Root = () => {
   return(
     <ApolloProvider client={ client }>
-      <ApolloProviderHooks client={ client }>
-        <Provider store={ store } >
-              <App />
-        </Provider>
-      </ApolloProviderHooks>
+      <Provider store={ store } >
+        {/*  <ApolloProviderHooks client={ client }> */}
+            {/* <Provider store={ store } > */}
+                  <App />
+            {/* </Provider> */}
+        {/*  </ApolloProviderHooks> */}
+      </Provider>
     </ApolloProvider>
   );
 }

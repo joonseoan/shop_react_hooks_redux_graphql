@@ -271,6 +271,10 @@ class Feed extends Component {
 
   render() {
 
+    console.log('localStorage: ', localStorage.getItem('token'))
+
+    if(localStorage.getItem('token') === null) return <div />;
+
     return (
       <Fragment>
         <ErrorHandler error={this.state.error} onHandle={this.errorHandler} />

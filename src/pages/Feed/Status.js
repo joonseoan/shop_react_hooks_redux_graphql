@@ -7,10 +7,15 @@ import Input from '../../components/Form/Input/Input';
 import Button from '../../components/Button/Button';
 
 const Status = props => {
+    if(localStorage.getItem('token') === null) return <div />;
 
     if(props.data.loading) return <div/>;
 
     const [ status, setStatus ] = useState('');
+
+    console.log('11111111: ', props);
+    console.log('222222222: ', props.data.user);
+    console.log(localStorage.getItem('token'))
 
     useEffect(() => {
 
@@ -64,6 +69,9 @@ const Status = props => {
     );
 }
 
-export default graphql(statusQuery)(
-    graphql(UpdateStatus)(Status)
+
+
+export default graphql(UpdateStatus)(
+    graphql(statusQuery)(Status)
 ); 
+
